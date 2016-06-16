@@ -1,0 +1,33 @@
+{{define "index"}}
+{{template "header" .}}
+<body>
+{{template "sidebar" .}}
+<div id="active">
+	<table class="table table-striped">
+		<tr>
+		  <th><p class="green lead text-center">Stock</p></th>
+		  <th><p class="lead text-center">Initial price</p></th>
+		  <th><p class="lead text-center">Latest price</p></th>
+		  <th><p class="lead text-center">Progress</p></th>
+		  <th><p class="lead text-center">Remove</th>
+		</tr>
+		{{range $stock := .Posts}}
+		<tr>
+		  <td><p class="lead text-center">{{$stock.Name}}<p></td>
+		  <td><p class="lead text-center"> {{$stock.BuyPrice}}</p></td>
+		  <td><p class="lead text-center">{{$stock.LastTradePriceOnly}}</p></td>
+		  <td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}}</p></td>
+		  <td><button class="btn btn-default" type="submit" value="">Delete</button></td>
+		</tr>
+		{{end}}
+		<tr>
+		  <td><p class="lead text-center"><strong>Total growth of portfolio:</strong></p></td>
+		  <td></td>
+		  <td></td>
+		  <td><p class="lead text-center"><strong>{{.Growth}}</strong></p></td>
+		</tr>
+	</table>
+</div>
+</body>
+{{template "footer" .}}
+{{end}}

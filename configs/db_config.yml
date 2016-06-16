@@ -1,0 +1,6 @@
+db_user: "b0e21cd256f9bf"
+db_password: "48122e8a"
+db_server: "tcp(us-cdbr-iron-east-04.cleardb.net:3306)"
+db_name: "heroku_4499eae5e6a7bd4"
+db_type: "mysql"
+db_table: "stock123"

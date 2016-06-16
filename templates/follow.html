@@ -1,0 +1,23 @@
+{{define "follow"}}
+{{template "header" .}}
+<body>
+{{template "sidebar" .}}
+<div id="following">
+	<table class="table table-striped">
+		<tr>
+		  <th><p class="lead text-center">Stock<p></th>
+		  <th><p class="lead text-center">Latest price</p></th>
+		  <th><p class="lead text-center">Progress</p></th>
+		</tr>
+		{{range $pstock	:= .PassiveStocks}}
+		<tr>
+		  <td><p class="lead text-center">{{$pstock.Name}}<p></td>
+		  <td><p class="lead text-center">{{$pstock.LastTradePriceOnly}}</td>
+		  <td><p class="lead text-center">{{$pstock.Change}}</p></td>
+		</tr>
+		{{end}}
+	</table>
+</div>
+</body>
+{{template "footer" .}}
+{{end}}

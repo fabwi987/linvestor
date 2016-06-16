@@ -1,0 +1,89 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>linApp</title>
+<link rel="stylesheet" href="stylesheets/style.css" type="text/css" media="screen" charset="utf-8" />
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+<link rel='stylesheet' href='./css/app.css'>
+<link rel='stylesheet' href='./css/flyout_button.css'>
+<link rel='stylesheet' href='./css/flyout_menu.css'>
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+<script src='./scripts/flyout_menu.js' async></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<!--
+**********************************
+SIDEBAR
+**********************************
+-->
+
+<aside class="sidebar" id="sidebar">
+    <nav class="menu-items">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Add stock</a></li>
+        </ul>
+    </nav>
+
+
+    <!--
+    **********************************
+    HAMBURGER
+    **********************************
+    -->
+    <div id="hamburger" class="hamburglar menu-open-button">
+
+        <div class="burger-icon">
+            <div class="burger-container">
+                <span class="burger-bun-top"></span>
+                <span class="burger-filling"></span>
+                <span class="burger-bun-bot"></span>
+            </div>
+        </div>
+
+        <!-- svg ring containter -->
+        <div class="burger-ring">
+            <svg class="svg-ring">
+                <path class="path" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="4"
+                      d="M 34 2 C 16.3 2 2 16.3 2 34 s 14.3 32 32 32 s 32 -14.3 32 -32 S 51.7 2 34 2"/>
+            </svg>
+        </div>
+        <!-- the masked path that animates the fill to the ring -->
+
+        <svg width="0" height="0">
+            <mask id="mask">
+                <path xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" stroke-miterlimit="10"
+                      stroke-width="4" d="M 34 2 c 11.6 0 21.8 6.2 27.4 15.5 c 2.9 4.8 5 16.5 -9.4 16.5 h -4"/>
+            </mask>
+        </svg>
+        <div class="path-burger">
+            <div class="animate-path">
+                <div class="path-rotation"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--
+    **********************************
+    HAMBURGER END
+    **********************************
+    -->
+</aside>
+
+<!--
+**********************************
+SIDEBAR END
+**********************************
+-->
+</body>
+</html>

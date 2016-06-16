@@ -1,0 +1,26 @@
+{{define "add"}}
+{{template "header" .}}
+<body>
+{{template "sidebar" .}}
+<div>
+	<table class="table table-striped">
+		<tr>
+		  <th><p class="lead text-center">Stock<p></th>
+		  <th><p class="lead text-center">Initial price</p></th>
+		  <th><p class="lead text-center">Number of shares</p></th>
+		  <th><p class="lead text-center">Transaction/Following</p></th>
+		  <th><p class="lead text-center">Submit</p></th>
+		</tr>
+		<tr>
+			<form action="save" method="POST">
+			  <td><input type="text" class="form-control" id="stock" name="stock" placeholder="Stock symbol"></td>
+			  <td><input type="text" class="form-control" id="price" name="price" placeholder="Price"></td>
+			  <td><input type="text" class="form-control" id="qty" name="qty" placeholder="Qty"></td>
+			  <td><input type="text" class="form-control" id="type" name="type" placeholder="Type"></td>
+			  <td><button class="btn btn-default" type="submit">Add</button></td>
+			</form>
+		</tr>
+	</table>
+</div>
+{{template "footer" .}}
+{{end}}
