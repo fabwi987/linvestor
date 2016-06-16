@@ -153,10 +153,10 @@ func GetSQLConfigParameters() {
 	dbType = viper.GetString("db_type")
 	dbTable = viper.GetString("db_table")**/
 
-	dbUser = "b0e21cd256f9bf"
-	dbPassword = "48122e8a"
+	dbUser = "b5fda560229b16"
+	dbPassword = "10275c0d"
 	dbServer = "tcp(us-cdbr-iron-east-04.cleardb.net:3306)"
-	dbName = "heroku_c52163db78254a1"
+	dbName = "heroku_949c9d7c3962055"
 	dbType = "mysql"
 	dbTable = "stock123"
 
