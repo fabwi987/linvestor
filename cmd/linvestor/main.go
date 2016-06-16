@@ -24,7 +24,7 @@ func main() {
 	router.LoadHTMLGlob("templates/*.html")
 	router.Static("/static", "static")
 	//router.StaticFile("/favicon.ico", "./resources/favicon.ico") testingt
-
+	//testetst
 	router.GET("/", ginFunc)
 	router.GET("/new", insertStock)
 	router.POST("/submit", submit)
