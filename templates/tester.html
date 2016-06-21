@@ -4,15 +4,17 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Linvestor Limited</title>
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" media="screen" charset="utf-8" />
 
-<!-- Latest compiled and minified CSS -->
+
+<!-- Latest compiled and minified CSS
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
 
-<!-- Optional theme -->
+<!-- Optional theme 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+<!-- Latest compiled and minified JavaScript
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>-->
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -30,22 +32,20 @@
 		  <th><p class="lead text-center">Initial price</p></th>
 		  <th><p class="lead text-center">Latest price</p></th>
 		  <th><p class="lead text-center">Progress</p></th>
-		  <th><p class="lead text-center">Remove</th>
+		  <th><p class="lead text-center"></th>
 		</tr>
-		{{range $stock := .Posts}}
 		<tr>
-		  <td><p class="lead text-center">{{$stock.Name}}<p></td>
-		  <td><p class="lead text-center"> {{$stock.BuyPrice}}</p></td>
-		  <td><p class="lead text-center">{{$stock.LastTradePriceOnly}}</p></td>
-		  <td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}}</p></td>
+		  <td><p class="lead text-center">Test<p></td>
+		  <td><p class="lead text-center">Test</p></td>
+		  <td><p class="lead text-center">Test</p></td>
+		  <td><p class="lead text-center">Test</p></td>
 		  <td></td>
 		</tr>
-		{{end}}
 		<tr>
 		  <td><p class="lead text-center"><strong>Total growth of portfolio:</strong></p></td>
 		  <td></td>
 		  <td></td>
-		  <td><p class="lead text-center"><strong>{{.Growth}}</strong></p></td>
+		  <td><p class="lead text-center"><strong>Test</strong></p></td>
 			<td></td>
 		</tr>
 	</table>
