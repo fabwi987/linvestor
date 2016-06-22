@@ -40,6 +40,8 @@
 - Download and install [Heroku tool belt}(https://toolbelt.heroku.com/)
 - Start a cmd-window from the project root
  - `$ heroku login`
+ - `$ godep save ./..`
+ - `$ go install ./..`
  - `$ heroku local`
 - Open a browser and go to "localhost:[port]/" to run the application locally
 
