@@ -1,6 +1,6 @@
 # linvestor
 
-## A finance application for the share club Linvestor.
+## A finance application for the share club Linvestor made in GO.
 
 ### Installing GO:
 - Download [GO](http://golang.org/dl/)
@@ -34,6 +34,14 @@
 ### Download the code to local environment
 - `$ go get github.com/fabwi987/linvestor`
  - The project will download to C:\GoPath\src\github.com\fabwi987\linvestor
+
+### Using Heoku (hosting through PAAS)
+- Create a [Heroku account](https://heroku.com)
+- Download and install [Heroku tool belt}(https://toolbelt.heroku.com/)
+- Start a cmd-window from the project root
+ - `$ heroku login`
+ - `$ heroku local`
+- Open a browser and go to "localhost:[port]/" to run the application locally
 
 
 
