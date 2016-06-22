@@ -43,6 +43,12 @@
  - `$ heroku local`
 - Open a browser and go to "localhost:[port]/" to run the application locally
 
+### Help
+- [Learning GO](https://golang.org/doc/)
+- [Using GIT](http://rogerdudler.github.io/git-guide/)
+- [Heroku and GO](https://devcenter.heroku.com/articles/getting-started-with-go#introduction)
+- [Atom tips](http://readwrite.com/2014/05/20/github-atom-5-tips-getting-started-tutorial-corey-johnson/)
+
 
 
 
