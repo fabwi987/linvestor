@@ -8,10 +8,10 @@ import (
 )
 
 //ShowStocks collects all stock from the database and gets their latest information from the finance api
-func ShowStocks(_type string) ([]models.StockDataSaveFormat, string) {
+func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
 	var dbData []models.StockDataSaveFormat
-	dbData, err := models.DBQuerySQL()
+	dbData, err := models.DBQuerySQL(dbtable)
 	models.Perror(err)
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
@@ -59,14 +59,14 @@ func ShowStocks(_type string) ([]models.StockDataSaveFormat, string) {
 }
 
 //InsertStock Inserts the selected stock to the database
-func InsertStock(_symbol string, _price string, _number string) {
+func InsertStock(dbtable string, _symbol string, _price string, _number string) {
 
 	var stockSave models.StockDataSaveFormat
 	stock, err := models.GetShareData(_symbol)
 
 	stockSave, err = models.ModifyStock(stock, _price, _number)
 	models.Perror(err)
-	res, err := models.DbInsertSQL(stockSave)
+	res, err := models.DbInsertSQL(stockSave, dbtable)
 	models.Perror(err)
 	log.Println(res)
 }

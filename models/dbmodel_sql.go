@@ -12,7 +12,6 @@ var dbPassword string
 var dbServer string
 var dbName string
 var dbType string
-var dbTable string
 var connString string
 var tableExist bool
 
@@ -25,17 +24,17 @@ func DbCreateConnectionString() {
 }
 
 //DbTableCreate creates the tabel the first time the application is used
-func DbTableCreate() {
+func DbTableCreate(dbtable string) {
 	DbCreateConnectionString()
 
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 	//log.Println(dbTable)
 
-	rows, err := db.Query("SHOW TABLES LIKE '" + dbTable + "'")
+	rows, err := db.Query("SHOW TABLES LIKE '" + dbtable + "'")
 	if !rows.Next() {
 		log.Println("Creating tabel")
-		stmt, err := db.Prepare("CREATE TABLE " + dbTable + " (idstock1 int(11) NOT NULL AUTO_INCREMENT,symbol varchar(45) DEFAULT NULL,created varchar(45) DEFAULT NULL,buyprice float DEFAULT NULL,noshares float DEFAULT NULL,PRIMARY KEY (idstock1)) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8")
+		stmt, err := db.Prepare("CREATE TABLE " + dbtable + " (idstock1 int(11) NOT NULL AUTO_INCREMENT,symbol varchar(45) DEFAULT NULL,created varchar(45) DEFAULT NULL,buyprice float DEFAULT NULL,noshares float DEFAULT NULL,PRIMARY KEY (idstock1)) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8")
 		res, err := stmt.Exec()
 		Perror(err)
 		log.Println(res.RowsAffected())
@@ -48,7 +47,7 @@ func DbTableCreate() {
 }
 
 //DBTestConnection is a simple method to test connection to DB
-func DBTestConnection() {
+func DBTestConnection(dbtable string) {
 	DbCreateConnectionString()
 
 	//connString = "b06fa04f33f026:a480ce77@tcp(us-cdbr-iron-east-04.cleardb.net:3306)/heroku_4499eae5e6a7bd4" //FUNKAR!!
@@ -57,7 +56,7 @@ func DBTestConnection() {
 	Perror(err)
 
 	var noRows int
-	rows, err := db.Query("SELECT COUNT(*) FROM" + dbTable)
+	rows, err := db.Query("SELECT COUNT(*) FROM" + dbtable)
 	log.Println(err)
 	rows.Next()
 	rows.Scan(&noRows)
@@ -66,7 +65,7 @@ func DBTestConnection() {
 }
 
 //DbInsertSQL inserts a new stock into an sql server database
-func DbInsertSQL(_stock StockDataSaveFormat) (string, error) {
+func DbInsertSQL(_stock StockDataSaveFormat, dbtable string) (string, error) {
 	//if !tableExist {
 	//DbTableCreate()
 	//}
@@ -76,7 +75,7 @@ func DbInsertSQL(_stock StockDataSaveFormat) (string, error) {
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 
-	stmt, err := db.Prepare("INSERT " + dbTable + " SET symbol=?,created=?,buyprice=?,noshares=?")
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?")
 	Perror(err)
 
 	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares)
@@ -92,9 +91,9 @@ func DbInsertSQL(_stock StockDataSaveFormat) (string, error) {
 }
 
 //DBQuerySQL selects all stocks from the database
-func DBQuerySQL() ([]StockDataSaveFormat, error) {
+func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 	if !tableExist {
-		DbTableCreate()
+		DbTableCreate(dbtable)
 	}
 
 	DbCreateConnectionString()
@@ -103,7 +102,7 @@ func DBQuerySQL() ([]StockDataSaveFormat, error) {
 	Perror(err)
 
 	var noRows int
-	rows, err := db.Query("SELECT COUNT(*) FROM " + dbTable)
+	rows, err := db.Query("SELECT COUNT(*) FROM " + dbtable)
 	Perror(err)
 	for rows.Next() {
 		err = rows.Scan(&noRows)
@@ -112,7 +111,7 @@ func DBQuerySQL() ([]StockDataSaveFormat, error) {
 
 	var newStocks = make([]StockDataSaveFormat, noRows)
 
-	rows, err = db.Query("SELECT * FROM " + dbTable)
+	rows, err = db.Query("SELECT * FROM " + dbtable)
 	Perror(err)
 
 	var i int
@@ -158,6 +157,5 @@ func GetSQLConfigParameters() {
 	dbServer = "tcp(us-cdbr-iron-east-04.cleardb.net:3306)"
 	dbName = "heroku_949c9d7c3962055"
 	dbType = "mysql"
-	dbTable = "stock123"
 
 }

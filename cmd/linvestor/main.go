@@ -36,7 +36,7 @@ func main() {
 func ginFunc(c *gin.Context) {
 
 	var dispData []models.StockDataSaveFormat
-	dispData, growth := controllers.ShowStocks("tst")
+	dispData, growth := controllers.ShowStocks("stock123")
 
 	layoutData := struct {
 		ThreadID int
@@ -56,5 +56,5 @@ func insertStock(c *gin.Context) {
 }
 
 func submit(c *gin.Context) {
-	controllers.InsertStock(c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"))
+	controllers.InsertStock("stock123", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"))
 }

@@ -1,61 +1,52 @@
 # linvestor
 
-Getting started:
+## A finance application for the share club Linvestor made in GO.
 
-Go to:
-http://golang.org/dl/
-and download and install the .MSI package WITH ALL DEFAULT. Just hit NEXT.
-Create new folder in C:\ named "GoPath"
-Go to the "System" control panel, click the "Advanced" tab. Select "Environment Variables" and under "System variables":
-add GOPATH variable, set it to "C:\GoPath"
+### Installing GO:
+- Download [GO](http://golang.org/dl/)
+ - Install the .MSI package WITH ALL DEFAULT. Just hit NEXT.
+- Create folder "C:\GoPath"
+- Go to the "System" control panel, click the "Advanced" tab. Select "Environment Variables" and under "System variables":
+ - Add GOPATH variable, set it to "C:\GoPath"
 
-Install Git (version control)
-Go to:
-http://git-scm.com/downloads
-Download and install, when asked to select how to "Adjust your PATH environment", select the SECOND choice which is "Use Git from the Windows Command Prompt".
-Continue on with the defaults.
+### Install go tools
+- Open a NEW terminal (with new env vars)
+- Install good tools:
+ - `$ go get -u -ldflags -H=windowsgui github.com/nsf/gocode/...`
+ - `$ go get -u github.com/abourget/godef/...`
+ - `$ go get -u golang.org/x/tools/cmd/...`
 
-Install go tools
-Open a NEW terminal (with new env vars), paste this in to install good tools:
-go get -u -ldflags -H=windowsgui github.com/nsf/gocode/...
-go get -u github.com/abourget/godef/...
-go get -u golang.org/x/tools/cmd/...
-You might see an error with godoc. Ignore it.
+### Install Atom (IDE)
+- Download [Atom](https://atom.io/)
+- Install and then open
+- In the Welcome Guide
+ - Click "Install package"
+ - Click "Open Installer"
+ - Search "go-plus" (by joefitzgerald)
+  - Install it
 
-Install Atom (IDE)
-Atom has the best support for coding in Go, has excellent plugins and works across platforms. Throw Sublime Text away and use Atom.
-Go to:
-https://atom.io/
-Download and install (it will open), and once in there:
-In the Welcome Guide
-Click "Install package"
-Click "Open Installer"
-Search "go-plus" (by joefitzgerald)
-Install it
+### Install Git (version control)
+- Download [Git](http://git-scm.com/downloads)
+- Install
+ - When asked to select how to "Adjust your PATH environment", select "Use Git from the Windows Command Prompt".
+ - Continue on with the defaults.
 
-Getting the repository from git:
-write in cmd: go get github.com/fabwi987/linvestor
-project will download to C:\GoPath\src\github.com\fabwi987\linvestor
+### Download the code to local environment
+- `$ go get github.com/fabwi987/linvestor`
+ - The project will download to C:\GoPath\src\github.com\fabwi987\linvestor
 
-Installing Heroku:
-Download Heroku toolbelt: https://devcenter.heroku.com/articles/getting-started-with-go#set-up
-From cmd: heroku login (Get user account and password from admin)
-Associate heroku with the app: $heroku git:remote -a [name_of_application]
+### Using Heoku (hosting through PAAS)
+- Create a [Heroku account](https://heroku.com)
+- Download and install [Heroku tool belt}(https://toolbelt.heroku.com/)
+- Start a cmd-window from the project root
+ - `$ heroku login`
+ - `$ godep save ./..`
+ - `$ go install ./..`
+ - `$ heroku local`
+- Open a browser and go to "localhost:[port]/" to run the application locally
 
-
-Testing (all commands are run from the root directory of "linvestor"):
-godep save ./..
-go install ./..
-heroku local
-Open browser -> loclahost:5050
-
-GoLive
-Add the modified files to the local git repository: $ git add -A .
-Commit the changes to the repository: $ git commit -m "[Insert message]"
-Deploy: $ git push heroku master
-
-
-
-
-
-
+### Help
+- [Learning GO](https://golang.org/doc/)
+- [Using GIT](http://rogerdudler.github.io/git-guide/)
+- [Heroku and GO](https://devcenter.heroku.com/articles/getting-started-with-go#introduction)
+- [Atom tips](http://readwrite.com/2014/05/20/github-atom-5-tips-getting-started-tutorial-corey-johnson/)
