@@ -26,6 +26,7 @@ func main() {
 	//router.StaticFile("/favicon.ico", "./resources/favicon.ico") testingt
 	//testetst
 	router.GET("/", ginFunc)
+	router.GET("/old", oldStockView)
 	router.GET("/new", insertStock)
 	router.POST("/submit", submit)
 	router.Run(":" + port)
@@ -49,6 +50,22 @@ func ginFunc(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "full.html", layoutData)
+}
+
+func oldStockView(c *gin.Context) {
+
+	var dispData []models.StockDataSaveFormat
+	dispData = controllers.ShowOldStock("stock124")
+
+	layoutData := struct {
+		ThreadID int
+		Posts    []models.StockDataSaveFormat
+	}{
+		ThreadID: 1,
+		Posts:    dispData,
+	}
+
+	c.HTML(http.StatusOK, "sold.html", layoutData)
 }
 
 func insertStock(c *gin.Context) {

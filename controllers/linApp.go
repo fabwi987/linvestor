@@ -58,6 +58,41 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	return allData, currString
 }
 
+//Fetch stocks that have been sold
+func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
+
+	var dbData []models.StockDataSaveFormat
+	dbData, err := models.DBQuerySQL(dbtable)
+	models.Perror(err)
+
+	var allData = make([]models.StockDataSaveFormat, len(dbData))
+
+	//For each stock, get latest value and update DB
+	for i := 0; i < len(dbData); i++ {
+		//Calcullate the change and set approperiate color
+		startValue, err := strconv.ParseFloat(dbData[i].BuyPrice, 64)
+		saleValue, err := strconv.ParseFloat(dbData[i].SalesPrice, 64)
+		models.Perror(err)
+
+		dev := saleValue / startValue
+
+		dev = (dev * 100) - 100
+		devString := strconv.FormatFloat(dev, 'f', 2, 64)
+		dbData[i].Progress = devString + " %"
+
+		if dev > 0 {
+			dbData[i].Color = "green"
+		} else {
+			dbData[i].Color = "red"
+		}
+
+		allData[i] = dbData[i]
+	}
+
+	return allData
+
+}
+
 //InsertStock Inserts the selected stock to the database
 func InsertStock(dbtable string, _symbol string, _price string, _number string) {
 

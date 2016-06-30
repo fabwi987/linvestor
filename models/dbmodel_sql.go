@@ -75,10 +75,10 @@ func DbInsertSQL(_stock StockDataSaveFormat, dbtable string) (string, error) {
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 
-	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?")
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?")
 	Perror(err)
 
-	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares)
+	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, "0", "0")
 	Perror(err)
 	nid, err := res.LastInsertId()
 	log.Println(nid)
@@ -113,13 +113,13 @@ func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 
 	rows, err = db.Query("SELECT * FROM " + dbtable)
 	Perror(err)
-
+	log.Println(rows.Columns())
 	var i int
 	for rows.Next() {
 
 		var tempStock StockDataSaveFormat
 		var id int
-		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares)
+		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
 		Perror(err)
 		newStocks[i] = tempStock
 		//log.Println(newStocks[i].Symbol)

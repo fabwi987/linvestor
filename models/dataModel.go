@@ -73,6 +73,7 @@ type StockDataSaveFormat struct {
 	Progress           string `json:"Progress" bson:"Progress"`
 	Color              string `json:"Color" bson:"Color"`
 	Active             string `json:"Active" bson:"Active"`
+	SalesPrice         string `json:"SalesPrice" bson:"SalesPrice"`
 }
 
 //Modifies the stock before insert to DB
