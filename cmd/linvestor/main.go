@@ -29,6 +29,7 @@ func main() {
 	router.GET("/old", oldStockView)
 	router.GET("/new", insertStock)
 	router.POST("/submit", submit)
+	router.POST("/sell", sell)
 	router.Run(":" + port)
 
 }
@@ -74,4 +75,10 @@ func insertStock(c *gin.Context) {
 
 func submit(c *gin.Context) {
 	controllers.InsertStock("stock123", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"))
+}
+
+func sell(c *gin.Context) {
+	//log.Println(c.PostForm("symbol"))
+	//log.Println(c.PostForm("salesprice"))
+	controllers.SellStock("stock123", "stock124", c.PostForm("symbol"), c.PostForm("salesprice"))
 }

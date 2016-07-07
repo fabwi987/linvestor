@@ -58,7 +58,7 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	return allData, currString
 }
 
-//Fetch stocks that have been sold
+//ShowOldStock fetch stocks that have been sold
 func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 
 	var dbData []models.StockDataSaveFormat
@@ -104,4 +104,29 @@ func InsertStock(dbtable string, _symbol string, _price string, _number string) 
 	res, err := models.DbInsertSQL(stockSave, dbtable)
 	models.Perror(err)
 	log.Println(res)
+}
+
+//SellStock takes the sales price as input and moves the stock to the old stock table
+func SellStock(dbtable string, dbtableold string, symbol string, price string) {
+
+	log.Println("Symbol = " + symbol)
+	log.Println("Sales price = " + price)
+	//Create temp variable to hold stock
+
+	var dbStock models.StockDataSaveFormat
+
+	//Find stock data from db
+	dbStock, err := models.DBQuerySQLSingle(symbol, dbtable)
+	log.Println(dbStock.Symbol)
+
+	//Add the sales pric from user input
+	dbStock.SalesPrice = price
+
+	//Insert post to old stock db
+	res, err := models.DbInsertSQL(dbStock, dbtableold)
+	models.Perror(err)
+	log.Println(res)
+
+	//Delete post from active db
+	err = models.DBDeletePost(dbtable, dbStock.Symbol)
 }

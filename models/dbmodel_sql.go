@@ -78,7 +78,7 @@ func DbInsertSQL(_stock StockDataSaveFormat, dbtable string) (string, error) {
 	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?")
 	Perror(err)
 
-	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, "0", "0")
+	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, _stock.SalesPrice, _stock.Name)
 	Perror(err)
 	nid, err := res.LastInsertId()
 	log.Println(nid)
@@ -126,8 +126,51 @@ func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 		i++
 	}
 
+	db.Close()
 	log.Println("Hämtar data från DB")
 	return newStocks, nil
+}
+
+//DBQuerySQLSingle selects one specific stocks from the database
+func DBQuerySQLSingle(symbol string, dbtable string) (StockDataSaveFormat, error) {
+
+	DbCreateConnectionString()
+
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	stmt, err := db.Prepare("select * from " + dbtable + " where symbol = ?")
+	defer stmt.Close()
+	rows, err := stmt.Query(symbol)
+	defer rows.Close()
+	var tempStock StockDataSaveFormat
+	var id int
+	for rows.Next() {
+		err := rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
+		Perror(err)
+		log.Println("Hämtar data från DB")
+	}
+
+	db.Close()
+	return tempStock, nil
+}
+
+//DBDeletePost selects one specific stocks from the database
+func DBDeletePost(dbtable string, symbol string) error {
+
+	DbCreateConnectionString()
+
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	stmt, err := db.Prepare("delete from " + dbtable + " where symbol=?")
+	Perror(err)
+	res, err := stmt.Exec(symbol)
+	log.Println(res)
+
+	db.Close()
+
+	return err
 }
 
 //GetSQLConfigParameters sets the parameters to connect to database
