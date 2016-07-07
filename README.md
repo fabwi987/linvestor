@@ -2,6 +2,14 @@
 
 ## A finance application for the share club Linvestor made in GO.
 
+###Actionlist:
+- Functionality to sell stocks - OK
+- Split up HTML in templates
+- Sorting functionality
+- Log in with Google account
+- Presentation of member
+
+## Getting started guide
 ### Installing GO:
 - Download [GO](http://golang.org/dl/)
  - Install the .MSI package WITH ALL DEFAULT. Just hit NEXT.
