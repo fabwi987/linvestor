@@ -15,8 +15,8 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	models.Perror(err)
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
-	var startValue float64
-	var currentValue float64
+	//var startValue float64
+	//var currentValue float64
 	var currString string
 	//For each stock, get latest value and update DB
 	for i := 0; i < len(dbData); i++ {
@@ -28,7 +28,7 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 		//Calcullate the change and set approperiate color
 		lastPrice, err := strconv.ParseFloat(modDatan.LastTradePriceOnly, 64)
 		buyPrice, err := strconv.ParseFloat(modDatan.BuyPrice, 64)
-		numberOfShares, err := strconv.ParseFloat(modDatan.NumberOfShares, 64)
+		//numberOfShares, err := strconv.ParseFloat(modDatan.NumberOfShares, 64)
 		models.Perror(err)
 
 		dev := lastPrice / buyPrice
@@ -43,18 +43,21 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 			modDatan.Color = "red"
 		}
 
-		startValue = startValue + buyPrice*numberOfShares
-		currentValue = currentValue + lastPrice*numberOfShares
+		//removed since we only display progress per stock
+		//startValue = startValue + buyPrice*numberOfShares
+		//currentValue = currentValue + lastPrice*numberOfShares
 
 		models.Perror(err)
 		allData[i] = modDatan
-		log.Println(i)
-		log.Println(allData[i].Symbol)
+		//log.Println(i)
+		//log.Println(allData[i].Symbol)
 	}
 
-	currentValue = currentValue / startValue
-	currentValue = (currentValue * 100) - 100
-	currString = strconv.FormatFloat(currentValue, 'f', 2, 64) + " %"
+	//Removed since we only show progress per stock
+	//currentValue = currentValue / startValue
+	//currentValue = (currentValue * 100) - 100
+	//currString = strconv.FormatFloat(currentValue, 'f', 2, 64) + " %"
+	currString = ""
 	return allData, currString
 }
 
