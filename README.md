@@ -6,7 +6,7 @@
 - Functionality to sell stocks - OK
 - Split up HTML in templates
 - Sorting functionality
-- Log in with Google account
+- Log in with Google account - OK
 - Presentation of member
 
 ## Getting started guide
