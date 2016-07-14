@@ -25,15 +25,17 @@ func main() {
 	router.Static("/static", "static")
 	router.StaticFile("/favicon.ico", "./resources/favicon.ico")
 	//testetst
-	router.GET("/auth", models.AuthenticationHandler)
-	router.GET("/connect", models.Connect)
-	router.GET("/loggedin", models.Loggedin)
-	router.POST("/disconnect", models.Disconnect)
+
 	router.GET("/start", ginFunc)
 	router.GET("/old", oldStockView)
 	router.GET("/new", insertStock)
 	router.POST("/submit", submit)
 	router.POST("/sell", sell)
+
+	router.GET("/google", controllers.InitiateSession)
+	router.POST("/disconnect", controllers.Disconnect)
+	router.POST("/connect", controllers.Connect)
+
 	router.Run(":" + port)
 
 }

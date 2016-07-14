@@ -1,12 +1,12 @@
-package models
+package controllers
 
 import (
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,24 +17,28 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
+//Google API project information
 const (
 	clientID        = "671169303456-8qk6ut70hnpu3iig62soqmj53nhs1daa.apps.googleusercontent.com"
 	clientSecret    = "cxJf-iZ4G9n2Q1PUedajavS-"
-	applicationName = "Linvestor"
+	applicationName = "Google+ Go Quickstart"
 )
 
+// config is the configuration specification supplied to the OAuth package.
 var config = &oauth2.Config{
 	ClientID:     clientID,
 	ClientSecret: clientSecret,
-	RedirectURL:  "postmessage",
-	Scopes: []string{
-		"https://www.googleapis.com/auth/plus.login", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
-	},
+	// Scope determines which API calls you are authorized to make
+	Scopes:   []string{"https://www.googleapis.com/auth/plus.login"},
 	Endpoint: google.Endpoint,
+	// Use "postmessage" for the code-flow for server side apps
+	RedirectURL: "postmessage",
 }
 
+// store initializes the Gorilla session store.
 var store = sessions.NewCookieStore([]byte(randomString(32)))
 
+// Token represents an OAuth token response.
 type Token struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
@@ -42,10 +46,13 @@ type Token struct {
 	IdToken     string `json:"id_token"`
 }
 
+// ClaimSet represents an IdToken response.
 type ClaimSet struct {
 	Sub string
 }
 
+// exchange takes an authentication code and exchanges it with the OAuth
+// endpoint for a Google API bearer token and a Google+ ID
 func exchange(code string) (accessToken string, idToken string, err error) {
 	tok, err := config.Exchange(oauth2.NoContext, code)
 	if err != nil {
@@ -55,6 +62,7 @@ func exchange(code string) (accessToken string, idToken string, err error) {
 	return tok.AccessToken, tok.Extra("id_token").(string), nil
 }
 
+// decodeIdToken takes an ID Token and decodes it to fetch the Google+ ID within
 func decodeIdToken(idToken string) (gplusID string, err error) {
 	// An ID token is a cryptographically-signed JSON object encoded in base 64.
 	// Normally, it is critical that you validate an ID token before you use it,
@@ -84,19 +92,9 @@ func decodeIdToken(idToken string) (gplusID string, err error) {
 	return set.Sub, nil
 }
 
-// AuthenticationHandler sets up a session for the current user and serves the home page
-func AuthenticationHandler(c *gin.Context) {
-	// This check prevents the "/" handler from handling all requests by default
-
-	/**if c.Request.URL.Path != "/" {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("Invalid session state: %s", state))
-		return
-	}*/
-
-	// Create a state token to prevent request forgery and store it in the session
-	// for later validation
+//InitiateSession creates a session and serves the page to the client
+func InitiateSession(c *gin.Context) {
 	session, err := store.Get(c.Request, "sessionName")
-	log.Println("Session: [" + session.Name() + "]")
 	if err != nil {
 		log.Println("error fetching session:", err)
 		// Ignore the initial session fetch error, as Get() always returns a
@@ -106,148 +104,96 @@ func AuthenticationHandler(c *gin.Context) {
 
 	state := randomString(64)
 	session.Values["state"] = state
-	session.Save(c.Request, c.Writer)
-
 	stateURL := url.QueryEscape(session.Values["state"].(string))
-	log.Println("State URL: [" + stateURL + "]")
+	err = session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Println("Something went wrong when saving the session: ", err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
 
 	// Fill in the missing fields in index.html
+
 	var data = struct {
 		ApplicationName, ClientID, State string
 	}{applicationName, clientID, stateURL}
 
-	log.Println("Data: [" + data.ApplicationName + "]")
-	log.Println("Data: [" + data.ClientID + "]")
-	log.Println("Data: [" + data.State + "]")
-	// Render and serve the HTML
-
 	c.HTML(http.StatusOK, "google.html", data)
+	//c.String(http.StatusOK, "Session state: %s Session stateUrl: %s", state, stateURL)
 
 }
 
-// connect exchanges the one-time authorization code for a token and stores the
-// token in the session
+//Connect handles the exchange with Google
 func Connect(c *gin.Context) {
 	// Ensure that the request is not a forgery and that the user sending this
 	// connect request is the expected user
 	session, err := store.Get(c.Request, "sessionName")
 	if err != nil {
 		log.Println("error fetching session:", err)
-
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
-	if c.PostForm("state") != session.Values["state"].(string) {
+
+	log.Println("Value in post form:")
+	log.Println(c.Query("state"))
+	if c.Query("state") != session.Values["state"].(string) {
 		log.Println("Invalid state parameter")
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
-	// Normally, the state is a one-time token; however, in this example, we want
-	// the user to be able to connect and disconnect without reloading the page.
-	// Thus, for demonstration, we don't implement this best practice.
-	// session.Values["state"] = nil
 
-	// Setup for fetching the code from the request payload
+	//TODO: make sure that the code is sent from the client
+	// Get the access code from Googel via the client
 	x, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		//return &appError{err, "Error reading code in request body", 500}
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 	code := string(x)
+	log.Println("Code: " + code)
 
+	//Perform the exchange of the accessToken with Google
 	accessToken, idToken, err := exchange(code)
 	if err != nil {
-		//return &appError{err, "Error exchanging code for access token", 500}
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
+	//Decode the Google Plus ID
 	gplusID, err := decodeIdToken(idToken)
 	if err != nil {
-		//	return &appError{err, "Error decoding ID token", 500}
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
-
-	// Check if the user is already connected
-	storedToken := session.Values["accessToken"]
-	storedGPlusID := session.Values["gplusID"]
-	if storedToken != nil && storedGPlusID == gplusID {
-		//m := "Current user already connected"
-		log.Println("Current user already connected")
-		//return &appError{errors.New(m), m, 200}
-	}
-
-	// Store the access token in the session for later use
+	//Save the token and the ID in our session
 	session.Values["accessToken"] = accessToken
 	session.Values["gplusID"] = gplusID
-	session.Save(c.Request, c.Writer)
-	//return nil
+	err = session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Println("Something went wrong when saving the session: ", err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
 }
 
-// disconnect revokes the current user's token and resets their session
+//Disconnect removes the current users data from the session
 func Disconnect(c *gin.Context) {
 	// Only disconnect a connected user
 	session, err := store.Get(c.Request, "sessionName")
 	if err != nil {
-		log.Println("error fetching session:", err)
-		//return &appError{err, "Error fetching session", 500}
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 	token := session.Values["accessToken"]
+	log.Println(token)
 	if token == nil {
-		//m := "Current user not connected"
-		log.Println("Current user not connected", err)
-		//return &appError{errors.New(m), m, 401}
+		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
 	// Execute HTTP GET request to revoke current token
 	url := "https://accounts.google.com/o/oauth2/revoke?token=" + token.(string)
 	resp, err := http.Get(url)
 	if err != nil {
-		//m := "Failed to revoke token for a given user"
-		log.Println("Failed to revoke token for a given user", err)
-		//return &appError{errors.New(m), m, 400}
+		c.AbortWithStatus(http.StatusBadRequest)
 	}
 	defer resp.Body.Close()
 
-	// Reset the user's session
+	//Reset the session values
 	session.Values["accessToken"] = nil
 	session.Save(c.Request, c.Writer)
-	//return nil
-}
 
-func Loggedin(c *gin.Context) {
-	session, err := store.Get(c.Request, "sessionName")
-	if err != nil {
-		log.Println("error fetching session:", err)
-		//return &appError{err, "Error fetching session", 500}
-	}
-	token := session.Values["accessToken"]
-	// Only fetch a list of people for connected users
-	if token == nil {
-		//m := "Current user not connected"
-		log.Println("Current user not connected", err)
-		//return &appError{errors.New(m), m, 401}
-	}
-
-	/**
-	// Create a new authorized API client
-	tok := new(oauth2.Token)
-	tok.AccessToken = token.(string)
-	client := oauth2.NewClient(oauth2.NoContext, oauth2.StaticTokenSource(tok))
-	service, err := plus.New(client)
-	if err != nil {
-		log.Println("Plus error ", err)
-		//return &appError{err, "Create Plus Client", 500}
-	}
-
-	// Get a list of people that this user has shared with this app
-
-	people := service.People.List("me", "visible")
-	peopleFeed, err := people.Do()
-	if err != nil {
-		m := "Failed to refresh access token"
-		if err.Error() == "AccessTokenRefreshError" {
-			return &appError{errors.New(m), m, 500}
-		}
-		return &appError{err, m, 500}
-	}
-	w.Header().Set("Content-type", "application/json")
-	err = json.NewEncoder(w).Encode(&peopleFeed)
-	if err != nil {
-		return &appError{err, "Convert PeopleFeed to JSON", 500}
-	}
-	return nil*/
 }
 
 // randomString returns a random string with the specified length
