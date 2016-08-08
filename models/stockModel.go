@@ -1,6 +1,6 @@
 package models
 
-//Modified struct for saving the data
+//StockDataSaveFormat is the format for saving the stock data
 type StockDataSaveFormat struct {
 	Name               string `json:"Name" bson:"Name"`
 	Symbol             string `json:"Symbol" bson:"Symbol"`
