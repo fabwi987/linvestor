@@ -12,8 +12,8 @@ import (
 func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
 	var dbData []models.StockDataSaveFormat
-	dbData, err := models.DBQuerySQL(dbtable)
-	models.Perror(err)
+	dbData, err := DBQuerySQL(dbtable)
+	Perror(err)
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
 	//var startValue float64
@@ -24,13 +24,13 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
 		datan, err := yagoo.Get(dbData[i].Symbol)
 
-		modDatan, err := models.ModifyStock(datan, dbData[i].BuyPrice, dbData[i].NumberOfShares)
+		modDatan, err := ModifyStock(datan, dbData[i].BuyPrice, dbData[i].NumberOfShares)
 
 		//Calcullate the change and set approperiate color
 		lastPrice, err := strconv.ParseFloat(modDatan.LastTradePriceOnly, 64)
 		buyPrice, err := strconv.ParseFloat(modDatan.BuyPrice, 64)
 		//numberOfShares, err := strconv.ParseFloat(modDatan.NumberOfShares, 64)
-		models.Perror(err)
+		Perror(err)
 
 		dev := lastPrice / buyPrice
 
@@ -48,7 +48,7 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 		//startValue = startValue + buyPrice*numberOfShares
 		//currentValue = currentValue + lastPrice*numberOfShares
 
-		models.Perror(err)
+		Perror(err)
 		allData[i] = modDatan
 		//log.Println(i)
 		//log.Println(allData[i].Symbol)
@@ -66,8 +66,8 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 
 	var dbData []models.StockDataSaveFormat
-	dbData, err := models.DBQuerySQL(dbtable)
-	models.Perror(err)
+	dbData, err := DBQuerySQL(dbtable)
+	Perror(err)
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
 
@@ -76,7 +76,7 @@ func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 		//Calcullate the change and set approperiate color
 		startValue, err := strconv.ParseFloat(dbData[i].BuyPrice, 64)
 		saleValue, err := strconv.ParseFloat(dbData[i].SalesPrice, 64)
-		models.Perror(err)
+		Perror(err)
 
 		dev := saleValue / startValue
 
@@ -103,10 +103,10 @@ func InsertStock(dbtable string, _symbol string, _price string, _number string) 
 	var stockSave models.StockDataSaveFormat
 	stock, err := yagoo.Get(_symbol)
 
-	stockSave, err = models.ModifyStock(stock, _price, _number)
-	models.Perror(err)
-	res, err := models.DbInsertSQL(stockSave, dbtable)
-	models.Perror(err)
+	stockSave, err = ModifyStock(stock, _price, _number)
+	Perror(err)
+	res, err := DbInsertSQL(stockSave, dbtable)
+	Perror(err)
 	log.Println(res)
 }
 
@@ -120,17 +120,30 @@ func SellStock(dbtable string, dbtableold string, symbol string, price string) {
 	var dbStock models.StockDataSaveFormat
 
 	//Find stock data from db
-	dbStock, err := models.DBQuerySQLSingle(symbol, dbtable)
+	dbStock, err := DBQuerySQLSingle(symbol, dbtable)
 	log.Println(dbStock.Symbol)
 
 	//Add the sales pric from user input
 	dbStock.SalesPrice = price
 
 	//Insert post to old stock db
-	res, err := models.DbInsertSQL(dbStock, dbtableold)
-	models.Perror(err)
+	res, err := DbInsertSQL(dbStock, dbtableold)
+	Perror(err)
 	log.Println(res)
 
 	//Delete post from active db
-	err = models.DBDeletePost(dbtable, dbStock.Symbol)
+	err = DBDeletePost(dbtable, dbStock.Symbol)
+}
+
+//ModifyStock modifies the stock before insert to DB
+func ModifyStock(_stock yagoo.StockData, _buyPrice string, _numberOfShares string) (models.StockDataSaveFormat, error) {
+	var toDB models.StockDataSaveFormat
+	toDB.Name = _stock.Query.Results.Quote.Name
+	toDB.Symbol = _stock.Query.Results.Quote.Symbol
+	toDB.LastTradePriceOnly = _stock.Query.Results.Quote.LastTradePriceOnly
+	toDB.Change = _stock.Query.Results.Quote.Change
+	toDB.Created = _stock.Query.Created
+	toDB.BuyPrice = _buyPrice
+	toDB.NumberOfShares = _numberOfShares
+	return toDB, nil
 }

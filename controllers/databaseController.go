@@ -1,9 +1,10 @@
-package models
+package controllers
 
 import (
 	"database/sql"
 	"log"
 
+	"github.com/fabwi987/linvestor/models"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -65,7 +66,7 @@ func DBTestConnection(dbtable string) {
 }
 
 //DbInsertSQL inserts a new stock into an sql server database
-func DbInsertSQL(_stock StockDataSaveFormat, dbtable string) (string, error) {
+func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, error) {
 	//if !tableExist {
 	//DbTableCreate()
 	//}
@@ -91,7 +92,7 @@ func DbInsertSQL(_stock StockDataSaveFormat, dbtable string) (string, error) {
 }
 
 //DBQuerySQL selects all stocks from the database
-func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
+func DBQuerySQL(dbtable string) ([]models.StockDataSaveFormat, error) {
 	if !tableExist {
 		DbTableCreate(dbtable)
 	}
@@ -109,7 +110,7 @@ func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 	}
 	Perror(err)
 
-	var newStocks = make([]StockDataSaveFormat, noRows)
+	var newStocks = make([]models.StockDataSaveFormat, noRows)
 
 	rows, err = db.Query("SELECT * FROM " + dbtable)
 	Perror(err)
@@ -117,7 +118,7 @@ func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 	var i int
 	for rows.Next() {
 
-		var tempStock StockDataSaveFormat
+		var tempStock models.StockDataSaveFormat
 		var id int
 		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
 		Perror(err)
@@ -132,7 +133,7 @@ func DBQuerySQL(dbtable string) ([]StockDataSaveFormat, error) {
 }
 
 //DBQuerySQLSingle selects one specific stocks from the database
-func DBQuerySQLSingle(symbol string, dbtable string) (StockDataSaveFormat, error) {
+func DBQuerySQLSingle(symbol string, dbtable string) (models.StockDataSaveFormat, error) {
 
 	DbCreateConnectionString()
 
@@ -143,7 +144,7 @@ func DBQuerySQLSingle(symbol string, dbtable string) (StockDataSaveFormat, error
 	defer stmt.Close()
 	rows, err := stmt.Query(symbol)
 	defer rows.Close()
-	var tempStock StockDataSaveFormat
+	var tempStock models.StockDataSaveFormat
 	var id int
 	for rows.Next() {
 		err := rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
