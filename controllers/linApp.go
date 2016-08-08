@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/fabwi987/YaGoo"
 	"github.com/fabwi987/linvestor/models"
 )
 
@@ -20,8 +21,8 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	var currString string
 	//For each stock, get latest value and update DB
 	for i := 0; i < len(dbData); i++ {
-		datan, err := models.GetShareData(dbData[i].Symbol)
-		models.Perror(err)
+
+		datan, err := yagoo.Get(dbData[i].Symbol)
 
 		modDatan, err := models.ModifyStock(datan, dbData[i].BuyPrice, dbData[i].NumberOfShares)
 
@@ -100,7 +101,7 @@ func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 func InsertStock(dbtable string, _symbol string, _price string, _number string) {
 
 	var stockSave models.StockDataSaveFormat
-	stock, err := models.GetShareData(_symbol)
+	stock, err := yagoo.Get(_symbol)
 
 	stockSave, err = models.ModifyStock(stock, _price, _number)
 	models.Perror(err)

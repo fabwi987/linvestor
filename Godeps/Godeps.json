@@ -7,6 +7,10 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/fabwi987/YaGoo",
+			"Rev": "e68c6e017d5977784cd2289a046f76a6e5083e19"
+		},
+		{
 			"ImportPath": "github.com/gin-gonic/gin",
 			"Comment": "v1.0rc1-110-g4cc2de6",
 			"Rev": "4cc2de6207f4128624cbdd16be30f64966c67c08"
