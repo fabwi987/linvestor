@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{template "header.html"}}
+<div id="active">
+	<table class="table table-striped">
+		<tr>
+		  <th><p class="green lead text-center">Stock</p></th>
+		  <th><p class="lead text-center">Initial price</p></th>
+		  <th><p class="lead text-center">Latest price</p></th>
+		  <!--<th><p class="lead text-center">Progress</p></th>-->
+      <th><p class="lead text-center">Sales price</th>
+			<th><p class="lead text-center">Sell</th>
+		</tr>
+		{{range $stock := .Posts}}
+			<form action="sell" method="POST">
+			<tr>
+			  <td><p class="lead text-center">{{$stock.Name}}<p><input type="hidden" name="symbol" value={{$stock.Symbol}}></td>
+			  <td><p class="lead text-center"> {{$stock.BuyPrice}}</p><input type="hidden" name="buyprice" value={{$stock.BuyPrice}}></td>
+			  <td><p class="lead text-center">{{$stock.LastTradePriceOnly}}</p><input type="hidden" name="lastprice" value={{$stock.LastTradePriceOnly}}></td>
+			  <!--<td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}}</p></td>-->
+				<td><input type="text" class="form-control" id="salesprice" name="salesprice" placeholder="Sales price"></td>
+        <td><button class="btn btn-default" type="submit">Sell</button></td>
+				</form>
+			</tr>
+		{{end}}
+	</table>
+</div>
+</div>
+{{template "footer.html"}}

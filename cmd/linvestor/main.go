@@ -24,11 +24,11 @@ func main() {
 	router.LoadHTMLGlob("templates/*.html")
 	router.Static("/static", "static")
 	router.StaticFile("/favicon.ico", "./resources/favicon.ico")
-	//testetst
 
 	router.GET("/start", ginFunc)
 	router.GET("/old", oldStockView)
 	router.GET("/new", insertStock)
+	router.GET("/market", market)
 	router.POST("/submit", submit)
 	router.POST("/sell", sell)
 
@@ -56,7 +56,7 @@ func ginFunc(c *gin.Context) {
 		Growth:   growth,
 	}
 
-	c.HTML(http.StatusOK, "full.html", layoutData)
+	c.HTML(http.StatusOK, "start.html", layoutData)
 }
 
 func oldStockView(c *gin.Context) {
@@ -87,4 +87,21 @@ func sell(c *gin.Context) {
 	//log.Println(c.PostForm("symbol"))
 	//log.Println(c.PostForm("salesprice"))
 	controllers.SellStock("stock123", "stock124", c.PostForm("symbol"), c.PostForm("salesprice"))
+}
+
+func market(c *gin.Context) {
+	var dispData []models.StockDataSaveFormat
+	dispData, growth := controllers.ShowStocks("stock123")
+
+	layoutData := struct {
+		ThreadID int
+		Posts    []models.StockDataSaveFormat
+		Growth   string
+	}{
+		ThreadID: 1,
+		Posts:    dispData,
+		Growth:   growth,
+	}
+
+	c.HTML(http.StatusOK, "sell.html", layoutData)
 }

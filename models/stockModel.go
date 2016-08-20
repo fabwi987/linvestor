@@ -13,4 +13,5 @@ type StockDataSaveFormat struct {
 	Color              string `json:"Color" bson:"Color"`
 	Active             string `json:"Active" bson:"Active"`
 	SalesPrice         string `json:"SalesPrice" bson:"SalesPrice"`
+	Updated            string `json:"Updated" bson:"Updated"`
 }

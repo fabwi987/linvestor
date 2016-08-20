@@ -112,7 +112,7 @@ func DBQuerySQL(dbtable string) ([]models.StockDataSaveFormat, error) {
 
 	var newStocks = make([]models.StockDataSaveFormat, noRows)
 
-	rows, err = db.Query("SELECT * FROM " + dbtable)
+	rows, err = db.Query("SELECT * FROM " + dbtable + " ORDER BY symbol ASC")
 	Perror(err)
 	log.Println(rows.Columns())
 	var i int

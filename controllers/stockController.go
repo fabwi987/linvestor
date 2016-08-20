@@ -145,5 +145,6 @@ func ModifyStock(_stock yagoo.StockData, _buyPrice string, _numberOfShares strin
 	toDB.Created = _stock.Query.Created
 	toDB.BuyPrice = _buyPrice
 	toDB.NumberOfShares = _numberOfShares
+	toDB.Updated = _stock.Query.Created
 	return toDB, nil
 }
