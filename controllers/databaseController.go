@@ -76,10 +76,10 @@ func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, err
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 
-	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?")
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?,lastprice=?")
 	Perror(err)
 
-	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, _stock.SalesPrice, _stock.Name)
+	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, _stock.SalesPrice, _stock.Name, _stock.LastTradePriceOnly)
 	Perror(err)
 	nid, err := res.LastInsertId()
 	log.Println(nid)
@@ -120,7 +120,7 @@ func DBQuerySQL(dbtable string) ([]models.StockDataSaveFormat, error) {
 
 		var tempStock models.StockDataSaveFormat
 		var id int
-		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
+		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
 		Perror(err)
 		newStocks[i] = tempStock
 		//log.Println(newStocks[i].Symbol)
@@ -147,7 +147,7 @@ func DBQuerySQLSingle(symbol string, dbtable string) (models.StockDataSaveFormat
 	var tempStock models.StockDataSaveFormat
 	var id int
 	for rows.Next() {
-		err := rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name)
+		err := rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
 		Perror(err)
 		log.Println("Hämtar data från DB")
 	}
@@ -172,6 +172,27 @@ func DBDeletePost(dbtable string, symbol string) error {
 	db.Close()
 
 	return err
+}
+
+//DBUpdateValue updates a selected field
+func DBUpdateValue(dbtable string, symbol string, field string, value string) error {
+
+	DbCreateConnectionString()
+
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	stmt, err := db.Prepare("UPDATE " + dbtable + " SET " + field + "=? WHERE symbol =?")
+	Perror(err)
+
+	res, err := stmt.Exec(value, symbol)
+	Perror(err)
+	log.Println(res)
+
+	db.Close()
+
+	return err
+
 }
 
 //GetSQLConfigParameters sets the parameters to connect to database

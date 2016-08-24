@@ -8,6 +8,13 @@ import (
 	"github.com/fabwi987/linvestor/models"
 )
 
+/**
+type ByPrice []models.StockDataSaveFormat
+
+func (a ByPrice) Len() int            { return len(a) }
+func (a ByPrice) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
+func (a ByPrice) Less(i, j, int) bool { return a[i].BuyPrice < a[j].BuyPrice }**/
+
 //ShowStocks collects all stock from the database and gets their latest information from the finance api
 func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
@@ -23,7 +30,6 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	for i := 0; i < len(dbData); i++ {
 
 		datan, err := yagoo.Get(dbData[i].Symbol)
-
 		modDatan, err := ModifyStock(datan, dbData[i].BuyPrice, dbData[i].NumberOfShares)
 
 		//Calcullate the change and set approperiate color
