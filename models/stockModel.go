@@ -1,5 +1,9 @@
 package models
 
+//"github.com/fabwi987/go-getting-started/models"
+
+//import "github.com/fabwi987/dbtest/models"
+
 //StockDataSaveFormat is the format for saving the stock data
 type StockDataSaveFormat struct {
 	Name               string `json:"Name" bson:"Name"`

@@ -92,7 +92,7 @@ func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, err
 }
 
 //DBQuerySQL selects all stocks from the database
-func DBQuerySQL(dbtable string) ([]models.StockDataSaveFormat, error) {
+func DBQuerySQL(dbtable string) (Stocks, error) {
 	if !tableExist {
 		DbTableCreate(dbtable)
 	}
@@ -110,7 +110,7 @@ func DBQuerySQL(dbtable string) ([]models.StockDataSaveFormat, error) {
 	}
 	Perror(err)
 
-	var newStocks = make([]models.StockDataSaveFormat, noRows)
+	var newStocks = make(Stocks, noRows)
 
 	rows, err = db.Query("SELECT * FROM " + dbtable + " ORDER BY symbol ASC")
 	Perror(err)

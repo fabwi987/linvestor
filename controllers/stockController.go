@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/fabwi987/YaGoo"
@@ -14,7 +15,7 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 	dbData, err := DBQuerySQL(dbtable)
 	Perror(err)
 
-	var allData = make([]models.StockDataSaveFormat, len(dbData))
+	var allData = make(Stocks, len(dbData))
 	var currString string
 
 	for i := 0; i < len(allData); i++ {
@@ -24,7 +25,7 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 		Perror(err)
 		allData[i] = UpdateStock(moddatan, "current")
 	}
-
+	sort.Sort(allData)
 	currString = ""
 	return allData, currString
 }
@@ -128,3 +129,19 @@ func ModifyStock(_stock yagoo.StockData, _buyPrice string, _numberOfShares strin
 	toDB.Updated = _stock.Query.Created
 	return toDB, nil
 }
+
+//Stocks is a slice of StockDataSaveFormat
+type Stocks []models.StockDataSaveFormat
+
+func (slice Stocks) Len() int { return len(slice) }
+func (slice Stocks) Less(i, j int) bool {
+	price1, err := strconv.ParseFloat(slice[i].LastTradePriceOnly, 64)
+	price2, err := strconv.ParseFloat(slice[j].LastTradePriceOnly, 64)
+	price3, err := strconv.ParseFloat(slice[i].BuyPrice, 64)
+	price4, err := strconv.ParseFloat(slice[j].BuyPrice, 64)
+	price5 := price1 / price3
+	price6 := price2 / price4
+	Perror(err)
+	return price5 > price6
+}
+func (slice Stocks) Swap(i, j int) { slice[i], slice[j] = slice[j], slice[i] }
