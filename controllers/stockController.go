@@ -8,64 +8,56 @@ import (
 	"github.com/fabwi987/linvestor/models"
 )
 
-/**
-type ByPrice []models.StockDataSaveFormat
-
-func (a ByPrice) Len() int            { return len(a) }
-func (a ByPrice) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
-func (a ByPrice) Less(i, j, int) bool { return a[i].BuyPrice < a[j].BuyPrice }**/
-
 //ShowStocks collects all stock from the database and gets their latest information from the finance api
 func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
-	var dbData []models.StockDataSaveFormat
 	dbData, err := DBQuerySQL(dbtable)
 	Perror(err)
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
-	//var startValue float64
-	//var currentValue float64
 	var currString string
-	//For each stock, get latest value and update DB
-	for i := 0; i < len(dbData); i++ {
+
+	for i := 0; i < len(allData); i++ {
 
 		datan, err := yagoo.Get(dbData[i].Symbol)
-		modDatan, err := ModifyStock(datan, dbData[i].BuyPrice, dbData[i].NumberOfShares)
-
-		//Calcullate the change and set approperiate color
-		lastPrice, err := strconv.ParseFloat(modDatan.LastTradePriceOnly, 64)
-		buyPrice, err := strconv.ParseFloat(modDatan.BuyPrice, 64)
-		//numberOfShares, err := strconv.ParseFloat(modDatan.NumberOfShares, 64)
+		moddatan, err := ModifyStock(datan, dbData[i].BuyPrice, dbData[i].LastTradePriceOnly)
 		Perror(err)
-
-		dev := lastPrice / buyPrice
-
-		dev = (dev * 100) - 100
-		devString := strconv.FormatFloat(dev, 'f', 2, 64)
-		modDatan.Progress = devString + " %"
-
-		if dev > 0 {
-			modDatan.Color = "green"
-		} else {
-			modDatan.Color = "red"
-		}
-
-		//removed since we only display progress per stock
-		//startValue = startValue + buyPrice*numberOfShares
-		//currentValue = currentValue + lastPrice*numberOfShares
-
-		Perror(err)
-		allData[i] = modDatan
-		//log.Println(i)
-		//log.Println(allData[i].Symbol)
+		allData[i] = UpdateStock(moddatan, "current")
 	}
 
-	//Removed since we only show progress per stock
-	//currentValue = currentValue / startValue
-	//currentValue = (currentValue * 100) - 100
-	//currString = strconv.FormatFloat(currentValue, 'f', 2, 64) + " %"
 	currString = ""
 	return allData, currString
+}
+
+//UpdateStock takes a stock and updates with the latest data from the api and other minor operations
+func UpdateStock(stock models.StockDataSaveFormat, kind string) models.StockDataSaveFormat {
+
+	buyPrice, err := strconv.ParseFloat(stock.BuyPrice, 64)
+	Perror(err)
+
+	var dev float64
+	if kind == "old" {
+		salesPrice, err := strconv.ParseFloat(stock.SalesPrice, 64)
+		dev = salesPrice / buyPrice
+		Perror(err)
+	} else {
+		lastPrice, err := strconv.ParseFloat(stock.LastTradePriceOnly, 64)
+		dev = lastPrice / buyPrice
+		Perror(err)
+	}
+
+	dev = (dev * 100) - 100
+	devString := strconv.FormatFloat(dev, 'f', 2, 64)
+	stock.Progress = devString + " %"
+
+	if dev > 0 {
+		stock.Color = "green"
+	} else {
+		stock.Color = "red"
+	}
+
+	return stock
+
 }
 
 //ShowOldStock fetch stocks that have been sold
@@ -77,26 +69,8 @@ func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 
 	var allData = make([]models.StockDataSaveFormat, len(dbData))
 
-	//For each stock, get latest value and update DB
-	for i := 0; i < len(dbData); i++ {
-		//Calcullate the change and set approperiate color
-		startValue, err := strconv.ParseFloat(dbData[i].BuyPrice, 64)
-		saleValue, err := strconv.ParseFloat(dbData[i].SalesPrice, 64)
-		Perror(err)
-
-		dev := saleValue / startValue
-
-		dev = (dev * 100) - 100
-		devString := strconv.FormatFloat(dev, 'f', 2, 64)
-		dbData[i].Progress = devString + " %"
-
-		if dev > 0 {
-			dbData[i].Color = "green"
-		} else {
-			dbData[i].Color = "red"
-		}
-
-		allData[i] = dbData[i]
+	for i := 0; i < len(allData); i++ {
+		allData[i] = UpdateStock(dbData[i], "old")
 	}
 
 	return allData
