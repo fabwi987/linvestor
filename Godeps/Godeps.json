@@ -8,7 +8,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/fabwi987/yaho",
-			"Rev": "373eff34fe90141ec0643e07b7d8f280f9e202dc"
+			"Rev": "7bbf52c3f4e71512304639f095b1a1eb1b705732"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
