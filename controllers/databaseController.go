@@ -112,7 +112,7 @@ func DBQuerySQL(dbtable string) (Stocks, error) {
 
 	var newStocks = make(Stocks, noRows)
 
-	rows, err = db.Query("SELECT * FROM " + dbtable + " ORDER BY symbol ASC")
+	rows, err = db.Query("SELECT * FROM " + dbtable)
 	Perror(err)
 	log.Println(rows.Columns())
 	var i int
@@ -128,7 +128,7 @@ func DBQuerySQL(dbtable string) (Stocks, error) {
 	}
 
 	db.Close()
-	log.Println("Hämtar data från DB")
+	log.Println("Hämtat data från DB")
 	return newStocks, nil
 }
 
