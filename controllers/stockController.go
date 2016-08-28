@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/fabwi987/linvestor/models"
+	"github.com/fabwi987/yaho"
 )
 
 //ShowStocks collects all stock from the database and gets their latest information from the finance api
@@ -17,18 +18,21 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
 	var allData = make(Stocks, len(dbData))
 	var currString string
+	var symbols string
 
-	var symbols []string
+	//log.Println(len(allData))
+
 	for i := 0; i < len(allData); i++ {
-		symbols[i] = allData[i].Symbol
+		symbols = symbols + "," + dbData[i].Symbol
 	}
 
+	//log.Println(symbols)
+	log.Println("Hämtar från api")
+	datan, err := yaho.PolyGet(symbols)
+
 	for i := 0; i < len(allData); i++ {
-		log.Println("Hämtar från api")
-		//var data models.StockDataSaveFormat
-		var moddatan models.StockDataSaveFormat
-		//datan, err := yagoo.Get(dbData[i].Symbol)
-		//moddatan, err := ModifyStock(datan, dbData[i].BuyPrice, dbData[i].LastTradePriceOnly)
+
+		moddatan, err := ModifyStock(datan.Query.Results.Quote[i], dbData[i].BuyPrice, dbData[i].LastTradePriceOnly)
 		Perror(err)
 		allData[i] = UpdateStock(moddatan, "current")
 	}
@@ -89,15 +93,14 @@ func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 func InsertStock(dbtable string, _symbol string, _price string, _number string) {
 
 	var stockSave models.StockDataSaveFormat
-	//var stock models.StockDataSaveFormat
-	//stock, err := yagoo.Get(_symbol)
+	stock, err := yaho.Get(_symbol)
 
-	//price, err := strconv.ParseFloat(_price, 64)
-	//number, err := strconv.ParseFloat(_number, 64)
-	//Perror(err)
+	price, err := strconv.ParseFloat(_price, 64)
+	number, err := strconv.ParseFloat(_number, 64)
+	Perror(err)
 
-	//stockSave, err = ModifyStock(stock, price, number)
-	//Perror(err)
+	stockSave, err = ModifyStock(stock.Query.Results.Quote, price, number)
+	Perror(err)
 	res, err := DbInsertSQL(stockSave, dbtable)
 	Perror(err)
 	log.Println(res)
@@ -129,31 +132,31 @@ func SellStock(dbtable string, dbtableold string, symbol string, price string) {
 }
 
 //ModifyStock modifies the stock before insert to DB
-/**
-func ModifyStock(_stock yagoo.StockData, _buyPrice float64, _numberOfShares float64) (models.StockDataSaveFormat, error) {
+func ModifyStock(_stock yaho.Quote, _buyPrice float64, _numberOfShares float64) (models.StockDataSaveFormat, error) {
 	var toDB models.StockDataSaveFormat
 	var err error
-	toDB.Name = _stock.Query.Results.Quote.Name
-	toDB.Symbol = _stock.Query.Results.Quote.Symbol
-	toDB.LastTradePriceOnly, err = strconv.ParseFloat(_stock.Query.Results.Quote.LastTradePriceOnly, 64)
-	toDB.Change, err = strconv.ParseFloat(_stock.Query.Results.Quote.Change, 64)
-	toDB.Created = _stock.Query.Created
+	toDB.Name = _stock.Name
+	toDB.Symbol = _stock.Symbol
+	toDB.LastTradePriceOnly, err = strconv.ParseFloat(_stock.LastTradePriceOnly, 64)
+	toDB.Change, err = strconv.ParseFloat(_stock.Change, 64)
+	toDB.Created = "0"
 	toDB.BuyPrice = _buyPrice
 	toDB.NumberOfShares = _numberOfShares
-	toDB.Updated = _stock.Query.Created
+	toDB.Updated = "0"
 	Perror(err)
 	return toDB, nil
-}*/
+}
 
 //Stocks is a slice of StockDataSaveFormat
 type Stocks []models.StockDataSaveFormat
 
 func (slice Stocks) Len() int { return len(slice) }
 func (slice Stocks) Less(i, j int) bool {
-	return (slice[i].LastTradePriceOnly / slice[i].BuyPrice) > (slice[j].LastTradePriceOnly / slice[j].BuyPrice)
+	return slice[i].Progress > slice[j].Progress
 }
 func (slice Stocks) Swap(i, j int) { slice[i], slice[j] = slice[j], slice[i] }
 
+//RoundUp removes a number of decimals
 func RoundUp(input float64, places int) (newVal float64) {
 	var round float64
 	pow := math.Pow(10, float64(places))

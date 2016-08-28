@@ -7,8 +7,8 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/fabwi987/YaGoo",
-			"Rev": "e68c6e017d5977784cd2289a046f76a6e5083e19"
+			"ImportPath": "github.com/fabwi987/yaho",
+			"Rev": "373eff34fe90141ec0643e07b7d8f280f9e202dc"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
