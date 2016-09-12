@@ -76,7 +76,7 @@ func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, err
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 
-	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?,lastprice=?")
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?,lastprice=?, user=?")
 	Perror(err)
 
 	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, _stock.SalesPrice, _stock.Name, _stock.LastTradePriceOnly)
@@ -114,14 +114,15 @@ func DBQuerySQL(dbtable string) (Stocks, error) {
 
 	rows, err = db.Query("SELECT * FROM " + dbtable)
 	Perror(err)
-	log.Println(rows.Columns())
+	//log.Println(rows.Columns())
 	var i int
 	for rows.Next() {
 
 		var tempStock models.StockDataSaveFormat
-		var id int
-		err = rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
+		//var id int
+		err = rows.Scan(&tempStock.ID, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
 		Perror(err)
+		//log.Println(tempStock.ID)
 		newStocks[i] = tempStock
 		//log.Println(newStocks[i].Symbol)
 		i++
@@ -145,15 +146,47 @@ func DBQuerySQLSingle(symbol string, dbtable string) (models.StockDataSaveFormat
 	rows, err := stmt.Query(symbol)
 	defer rows.Close()
 	var tempStock models.StockDataSaveFormat
-	var id int
+	//var id int
 	for rows.Next() {
-		err := rows.Scan(&id, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
+		err := rows.Scan(&tempStock.ID, &tempStock.Symbol, &tempStock.Created, &tempStock.BuyPrice, &tempStock.NumberOfShares, &tempStock.SalesPrice, &tempStock.Name, &tempStock.LastTradePriceOnly)
 		Perror(err)
-		log.Println("Hämtar data från DB")
+		//log.Println("Hämtar data från DB")
 	}
 
 	db.Close()
 	return tempStock, nil
+}
+
+func DBQueryUserRelation(dbtable string, instocks Stocks) []models.User {
+
+	DbCreateConnectionString()
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	//Stocks is a slice of StockDataSaveFormat
+	type Users []models.User
+	var userarray = make(Users, len(instocks))
+
+	for i := 0; i < len(instocks); i++ {
+
+		stmt, err := db.Prepare("select * from " + dbtable + " where id = (select userid from userrelation where stockid =?)")
+		Perror(err)
+		defer stmt.Close()
+		rows, err := stmt.Query(instocks[i].ID)
+		defer rows.Close()
+		var tempUser models.User
+		for rows.Next() {
+			err := rows.Scan(&tempUser.User, &tempUser.Name, &tempUser.GoogleID)
+			Perror(err)
+			//log.Println(tempUser.Name)
+			userarray[i] = tempUser
+
+		}
+
+	}
+
+	return userarray
+
 }
 
 //DBDeletePost selects one specific stocks from the database

@@ -11,7 +11,7 @@ import (
 )
 
 //ShowStocks collects all stock from the database and gets their latest information from the finance api
-func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
+func ShowStocks(dbtable string) ([]models.StockDataDisplayFormat, string) {
 
 	dbData, err := DBQuerySQL(dbtable)
 	Perror(err)
@@ -32,13 +32,21 @@ func ShowStocks(dbtable string) ([]models.StockDataSaveFormat, string) {
 
 	for i := 0; i < len(allData); i++ {
 
-		moddatan, err := ModifyStock(datan.Query.Results.Quote[i], dbData[i].BuyPrice, dbData[i].LastTradePriceOnly)
+		moddatan, err := ModifyStock(datan.Query.Results.Quote[i], dbData[i].BuyPrice, dbData[i].LastTradePriceOnly, dbData[i].ID)
 		Perror(err)
 		allData[i] = UpdateStock(moddatan, "current")
+
 	}
 	sort.Sort(allData)
+	usersArray := DBQueryUserRelation("usrtbl", allData)
+	dispArray := make(models.DispStocks, len(allData))
+
+	for i := 0; i < len(allData); i++ {
+		dispArray[i].Stock = allData[i]
+		dispArray[i].StockUser = usersArray[i]
+	}
 	currString = ""
-	return allData, currString
+	return dispArray, currString
 }
 
 //UpdateStock takes a stock and updates with the latest data from the api and other minor operations
@@ -99,7 +107,7 @@ func InsertStock(dbtable string, _symbol string, _price string, _number string) 
 	number, err := strconv.ParseFloat(_number, 64)
 	Perror(err)
 
-	stockSave, err = ModifyStock(stock.Query.Results.Quote, price, number)
+	stockSave, err = ModifyStock(stock.Query.Results.Quote, price, number, 0)
 	Perror(err)
 	res, err := DbInsertSQL(stockSave, dbtable)
 	Perror(err)
@@ -132,9 +140,10 @@ func SellStock(dbtable string, dbtableold string, symbol string, price string) {
 }
 
 //ModifyStock modifies the stock before insert to DB
-func ModifyStock(_stock yaho.Quote, _buyPrice float64, _numberOfShares float64) (models.StockDataSaveFormat, error) {
+func ModifyStock(_stock yaho.Quote, _buyPrice float64, _numberOfShares float64, ID int) (models.StockDataSaveFormat, error) {
 	var toDB models.StockDataSaveFormat
 	var err error
+	toDB.ID = ID
 	toDB.Name = _stock.Name
 	toDB.Symbol = _stock.Symbol
 	toDB.LastTradePriceOnly, err = strconv.ParseFloat(_stock.LastTradePriceOnly, 64)
@@ -143,12 +152,16 @@ func ModifyStock(_stock yaho.Quote, _buyPrice float64, _numberOfShares float64) 
 	toDB.BuyPrice = _buyPrice
 	toDB.NumberOfShares = _numberOfShares
 	toDB.Updated = "0"
+	toDB.User = "0"
 	Perror(err)
 	return toDB, nil
 }
 
 //Stocks is a slice of StockDataSaveFormat
 type Stocks []models.StockDataSaveFormat
+
+//Stocks is a slice of StockDataSaveFormat
+type StocksDisp []models.StockDataDisplayFormat
 
 func (slice Stocks) Len() int { return len(slice) }
 func (slice Stocks) Less(i, j int) bool {

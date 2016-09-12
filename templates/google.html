@@ -196,7 +196,7 @@ var helper = (function() {
       success = success || function(result) { helper.appendCircled(result); };
       $.ajax({
         type: 'GET',
-        url: $(location).attr('origin') + '/mainpage',
+        url: $(location).attr('origin') + '/start',
         contentType: 'application/octet-stream; charset=utf-8',
         success: success,
         error: failure,

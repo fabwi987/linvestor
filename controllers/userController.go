@@ -167,6 +167,23 @@ func Connect(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
+	/**
+	DbCreateConnectionString()
+
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	dbtable := "stock125"
+	stmt, err := db.Prepare("INSERT " + dbtable + "SET users=?,googleid=?,name=?")
+	Perror(err)
+
+	res, err := stmt.Exec(1, gplusID, "Fabian Widen")
+	Perror(err)
+	nid, err := res.LastInsertId()
+	log.Println(nid)
+
+	db.Close()*/
+
 }
 
 //Disconnect removes the current users data from the session

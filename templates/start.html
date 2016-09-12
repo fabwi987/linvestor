@@ -8,18 +8,18 @@
 		  <th><p class="lead text-center">Initial price</p></th>
 		  <th><p class="lead text-center">Latest price</p></th>
 		  <th><p class="lead text-center">Progress</p></th>
-			<th><p class="lead text-center">Last update</p></th>
+			<th><p class="lead text-center">User</p></th>
 		  <!--<th><p class="lead text-center">Sell</th>
 			<th><p class="lead text-center">Sales price</th>-->
 		</tr>
 		{{range $stock := .Posts}}
 			<form action="sell" method="POST">
 			<tr>
-			  <td><p class="lead text-center">{{$stock.Name}}<p><input type="hidden" name="symbol" value={{$stock.Symbol}}></td>
-			  <td><p class="lead text-center"> {{$stock.BuyPrice}}</p><input type="hidden" name="buyprice" value={{$stock.BuyPrice}}></td>
-			  <td><p class="lead text-center">{{$stock.LastTradePriceOnly}}</p><input type="hidden" name="lastprice" value={{$stock.LastTradePriceOnly}}></td>
-			  <td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}} %</p></td>
-				<td><p class="lead text-center">{{$stock.Updated}}<p><input type="hidden" name="symbol" value={{$stock.Updated}}></td>
+			  <td><p class="lead text-center">{{$stock.Stock.Name}}<p><input type="hidden" name="symbol" value={{$stock.Stock.Symbol}}></td>
+			  <td><p class="lead text-center"> {{$stock.Stock.BuyPrice}}</p><input type="hidden" name="buyprice" value={{$stock.Stock.BuyPrice}}></td>
+			  <td><p class="lead text-center">{{$stock.Stock.LastTradePriceOnly}}</p><input type="hidden" name="lastprice" value={{$stock.Stock.LastTradePriceOnly}}></td>
+			  <td{{if eq .Stock.Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Stock.Progress}} %</p></td>
+				<td><p class="lead text-center">{{$stock.StockUser.Name}}<p><input type="hidden" name="user" value={{$stock.StockUser.Name}}></td>
 				<!--
 				<td><button class="btn btn-default" type="submit">Sell</button></td>
 				<td><input type="text" class="form-control" id="salesprice" name="salesprice" placeholder="Sales price"></td-->

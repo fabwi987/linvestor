@@ -43,12 +43,12 @@ func main() {
 //ginFunc returns a gin context
 func ginFunc(c *gin.Context) {
 
-	var dispData []models.StockDataSaveFormat
-	dispData, growth := controllers.ShowStocks("stock123")
+	var dispData []models.StockDataDisplayFormat
+	dispData, growth := controllers.ShowStocks("stocks")
 
 	layoutData := struct {
 		ThreadID int
-		Posts    []models.StockDataSaveFormat
+		Posts    []models.StockDataDisplayFormat
 		Growth   string
 	}{
 		ThreadID: 1,
@@ -90,12 +90,12 @@ func sell(c *gin.Context) {
 }
 
 func market(c *gin.Context) {
-	var dispData []models.StockDataSaveFormat
+	var dispData []models.StockDataDisplayFormat
 	dispData, growth := controllers.ShowStocks("stock123")
 
 	layoutData := struct {
 		ThreadID int
-		Posts    []models.StockDataSaveFormat
+		Posts    []models.StockDataDisplayFormat
 		Growth   string
 	}{
 		ThreadID: 1,
