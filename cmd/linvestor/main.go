@@ -80,18 +80,18 @@ func insertStock(c *gin.Context) {
 }
 
 func submit(c *gin.Context) {
-	controllers.InsertStock("stock123", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"))
+	controllers.InsertStock("stocks", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"), c.PostForm("user"))
 }
 
 func sell(c *gin.Context) {
 	//log.Println(c.PostForm("symbol"))
 	//log.Println(c.PostForm("salesprice"))
-	controllers.SellStock("stock123", "stock124", c.PostForm("symbol"), c.PostForm("salesprice"))
+	controllers.SellStock("stocks", "oldstocks", c.PostForm("symbol"), c.PostForm("salesprice"))
 }
 
 func market(c *gin.Context) {
 	var dispData []models.StockDataDisplayFormat
-	dispData, growth := controllers.ShowStocks("stock123")
+	dispData, growth := controllers.ShowStocks("stocks")
 
 	layoutData := struct {
 		ThreadID int

@@ -66,7 +66,7 @@ func DBTestConnection(dbtable string) {
 }
 
 //DbInsertSQL inserts a new stock into an sql server database
-func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, error) {
+func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (int64, error) {
 	//if !tableExist {
 	//DbTableCreate()
 	//}
@@ -76,7 +76,7 @@ func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, err
 	db, err := sql.Open(dbType, connString)
 	Perror(err)
 
-	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?,lastprice=?, user=?")
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET symbol=?,created=?,buyprice=?,noshares=?,salesprice=?,name=?,latestprice=?")
 	Perror(err)
 
 	res, err := stmt.Exec(_stock.Symbol, _stock.Created, _stock.BuyPrice, _stock.NumberOfShares, _stock.SalesPrice, _stock.Name, _stock.LastTradePriceOnly)
@@ -88,7 +88,7 @@ func DbInsertSQL(_stock models.StockDataSaveFormat, dbtable string) (string, err
 
 	log.Println("Insert i DB")
 
-	return "Insert successfull", nil
+	return nid, nil
 }
 
 //DBQuerySQL selects all stocks from the database
@@ -157,6 +157,7 @@ func DBQuerySQLSingle(symbol string, dbtable string) (models.StockDataSaveFormat
 	return tempStock, nil
 }
 
+//DBQueryUserRelation attaches a user to each stock through the relations table
 func DBQueryUserRelation(dbtable string, instocks Stocks) []models.User {
 
 	DbCreateConnectionString()
@@ -186,6 +187,44 @@ func DBQueryUserRelation(dbtable string, instocks Stocks) []models.User {
 	}
 
 	return userarray
+
+}
+
+//DBQueryUserOnName returns the ID of a username
+func DBQueryUserOnName(username string, dbtable string) int {
+
+	DbCreateConnectionString()
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	stmt, err := db.Prepare("select id from " + dbtable + " where name = ?")
+	//log.Println(stmt)
+	Perror(err)
+	defer stmt.Close()
+	rows, err := stmt.Query(username)
+	var tempint int
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&tempint)
+		Perror(err)
+	}
+	return tempint
+
+}
+
+//DBCreateRelation returns the ID of a username
+func DBCreateRelation(userid int, stockid int64, dbtable string) {
+	DbCreateConnectionString()
+	db, err := sql.Open(dbType, connString)
+	Perror(err)
+
+	stmt, err := db.Prepare("INSERT " + dbtable + " SET stockid=?,userid=?")
+	Perror(err)
+
+	res, err := stmt.Exec(stockid, userid)
+	Perror(err)
+
+	log.Println(res)
 
 }
 

@@ -98,7 +98,7 @@ func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
 }
 
 //InsertStock Inserts the selected stock to the database
-func InsertStock(dbtable string, _symbol string, _price string, _number string) {
+func InsertStock(dbtable string, _symbol string, _price string, _number string, _name string) {
 
 	var stockSave models.StockDataSaveFormat
 	stock, err := yaho.Get(_symbol)
@@ -111,7 +111,14 @@ func InsertStock(dbtable string, _symbol string, _price string, _number string) 
 	Perror(err)
 	res, err := DbInsertSQL(stockSave, dbtable)
 	Perror(err)
-	log.Println(res)
+
+	//log.Println(res)
+	//log.Println(_name)
+
+	userid := DBQueryUserOnName(_name, "usrtbl")
+	//log.Println(userid)
+	DBCreateRelation(userid, res, "userrelation")
+
 }
 
 //SellStock takes the sales price as input and moves the stock to the old stock table
