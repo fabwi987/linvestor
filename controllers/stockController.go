@@ -54,6 +54,7 @@ func UpdateStock(stock models.StockDataSaveFormat, kind string) models.StockData
 	//Perror(err)
 
 	var dev float64
+
 	if kind == "old" {
 		//salesPrice, err := strconv.ParseFloat(stock.SalesPrice, 64)
 		dev = RoundUp(stock.SalesPrice/stock.BuyPrice, 4)
