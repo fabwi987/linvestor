@@ -27,6 +27,7 @@ func main() {
 
 	router.GET("/start", ginFunc)
 	router.GET("/old", oldStockView)
+	router.GET("/prospect", prospectView)
 	router.GET("/new", insertStock)
 	router.GET("/market", market)
 	router.POST("/submit", submit)
@@ -61,12 +62,12 @@ func ginFunc(c *gin.Context) {
 
 func oldStockView(c *gin.Context) {
 
-	var dispData []models.StockDataSaveFormat
-	dispData = controllers.ShowOldStock("stock124")
+	var dispData []models.StockDataDisplayFormat
+	dispData = controllers.ShowOldStock("oldstocks")
 
 	layoutData := struct {
 		ThreadID int
-		Posts    []models.StockDataSaveFormat
+		Posts    []models.StockDataDisplayFormat
 	}{
 		ThreadID: 1,
 		Posts:    dispData,
@@ -75,12 +76,33 @@ func oldStockView(c *gin.Context) {
 	c.HTML(http.StatusOK, "sold.html", layoutData)
 }
 
+func prospectView(c *gin.Context) {
+	var dispData []models.StockDataDisplayFormat
+	dispData, growth := controllers.ShowStocks("prospects")
+
+	layoutData := struct {
+		ThreadID int
+		Posts    []models.StockDataDisplayFormat
+		Growth   string
+	}{
+		ThreadID: 1,
+		Posts:    dispData,
+		Growth:   growth,
+	}
+
+	c.HTML(http.StatusOK, "start.html", layoutData)
+}
+
 func insertStock(c *gin.Context) {
 	c.HTML(http.StatusOK, "stock.html", nil)
 }
 
 func submit(c *gin.Context) {
-	controllers.InsertStock("stocks", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"), c.PostForm("user"))
+	if c.PostForm("prospect") == "p" {
+		controllers.InsertStock("prospects", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"), c.PostForm("user"), true)
+	} else {
+		controllers.InsertStock("stocks", c.PostForm("stock"), c.PostForm("price"), c.PostForm("qty"), c.PostForm("user"), false)
+	}
 }
 
 func sell(c *gin.Context) {

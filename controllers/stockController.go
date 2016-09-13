@@ -21,13 +21,11 @@ func ShowStocks(dbtable string) ([]models.StockDataDisplayFormat, string) {
 	var symbols string
 
 	//log.Println(len(allData))
-
 	for i := 0; i < len(allData); i++ {
 		symbols = symbols + "," + dbData[i].Symbol
-	}
+		//log.Println("Hämtar från api")
 
-	//log.Println(symbols)
-	log.Println("Hämtar från api")
+	}
 	datan, err := yaho.PolyGet(symbols)
 
 	for i := 0; i < len(allData); i++ {
@@ -81,27 +79,35 @@ func UpdateStock(stock models.StockDataSaveFormat, kind string) models.StockData
 }
 
 //ShowOldStock fetch stocks that have been sold
-func ShowOldStock(dbtable string) []models.StockDataSaveFormat {
+func ShowOldStock(dbtable string) []models.StockDataDisplayFormat {
 
 	var dbData []models.StockDataSaveFormat
 	dbData, err := DBQuerySQL(dbtable)
 	Perror(err)
 
-	var allData = make([]models.StockDataSaveFormat, len(dbData))
+	usersArray := DBQueryUserRelation("usrtbl", dbData)
+	dispArray := make(models.DispStocks, len(dbData))
 
-	for i := 0; i < len(allData); i++ {
-		allData[i] = UpdateStock(dbData[i], "old")
+	//var allData = make([]models.StockDataSaveFormat, len(dbData))
+
+	for i := 0; i < len(dispArray); i++ {
+		dispArray[i].Stock = UpdateStock(dbData[i], "old")
+		dispArray[i].StockUser = usersArray[i]
 	}
 
-	return allData
+	return dispArray
 
 }
 
 //InsertStock Inserts the selected stock to the database
-func InsertStock(dbtable string, _symbol string, _price string, _number string, _name string) {
+func InsertStock(dbtable string, _symbol string, _price string, _number string, _name string, prospect bool) {
 
 	var stockSave models.StockDataSaveFormat
 	stock, err := yaho.Get(_symbol)
+
+	if prospect {
+		_price = stock.Query.Results.Quote.LastTradePriceOnly
+	}
 
 	price, err := strconv.ParseFloat(_price, 64)
 	number, err := strconv.ParseFloat(_number, 64)

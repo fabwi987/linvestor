@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Linvestor Limited</title>
-
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-</head>
-
-<body>
-<div class="container-fluid">
-<div id="title_holder" class=".col-md-12">
-<h1>Linvestor - "You miss 100% of the risks you don't take"</h1>
-</div>
+	{{template "header.html"}}
 <div id="active">
 	<table class="table table-striped">
 		<tr>
@@ -29,17 +8,18 @@
 		  <th><p class="lead text-center">Initial price</p></th>
 		  <th><p class="lead text-center">Sold price</p></th>
 		  <th><p class="lead text-center">Progress</p></th>
+			<th><p class="lead text-center">User</p></th>
 		</tr>
 		{{range $stock := .Posts}}
 		<tr>
-		  <td><p class="lead text-center">{{$stock.Name}}<p></td>
-		  <td><p class="lead text-center"> {{$stock.BuyPrice}}</p></td>
-		  <td><p class="lead text-center">{{$stock.SalesPrice}}</p></td>
-		  <td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}}</p></td>
+		  <td><p class="lead text-center">{{$stock.Stock.Name}}<p></td>
+		  <td><p class="lead text-center"> {{$stock.Stock.BuyPrice}}</p></td>
+		  <td><p class="lead text-center">{{$stock.Stock.SalesPrice}}</p></td>
+		  <td{{if eq .Stock.Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Stock.Progress}}</p></td>
+			<td><p class="lead text-center">{{$stock.StockUser.Name}}</p></td>
 		</tr>
 		{{end}}
 	</table>
 </div>
 </div>
-</body>
-</html>
+{{template "footer.html"}}
