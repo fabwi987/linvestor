@@ -57,23 +57,36 @@ func UpdateStock(stock models.StockDataSaveFormat, kind string) models.StockData
 
 	if kind == "old" {
 		//salesPrice, err := strconv.ParseFloat(stock.SalesPrice, 64)
-		dev = RoundUp(stock.SalesPrice/stock.BuyPrice, 4)
+		//dev = RoundUp(stock.SalesPrice/stock.BuyPrice, 4)
+		dev = stock.SalesPrice / stock.BuyPrice
+		//dev = toFixed(stock.SalesPrice/stock.BuyPrice, 3)
 		//Perror(err
 	} else {
 		//lastPrice, err := strconv.ParseFloat(stock.LastTradePriceOnly, 64)
-		dev = RoundUp(stock.LastTradePriceOnly/stock.BuyPrice, 4)
+		//dev = RoundUp(stock.LastTradePriceOnly/stock.BuyPrice, 4)
+		dev = stock.LastTradePriceOnly / stock.BuyPrice
+		//dev = toFixed(stock.LastTradePriceOnly/stock.BuyPrice, 3)
 		//Perror(err)
 	}
 
-	stock.Progress = (dev * 100) - 100
-	//devString := strconv.FormatFloat(dev, 'f', 2, 64)
-	//stock.Progress = devString + " %"
+	dev = (dev * 100) - 100
+	stock.ProgFloat = dev
 
-	if stock.Progress > 0 {
+	//log.Println(dev)
+
+	if dev > 0 {
 		stock.Color = "green"
 	} else {
 		stock.Color = "red"
 	}
+
+	procString := strconv.FormatFloat(dev, 'f', 2, 64)
+	subString := procString
+	//subString := procString[:4]
+	stock.Progress = subString
+
+	//devString := strconv.FormatFloat(dev, 'f', 2, 64)
+	//stock.Progress = devString + " %"
 
 	return stock
 
@@ -179,7 +192,7 @@ type StocksDisp []models.StockDataDisplayFormat
 
 func (slice Stocks) Len() int { return len(slice) }
 func (slice Stocks) Less(i, j int) bool {
-	return slice[i].Progress > slice[j].Progress
+	return slice[i].ProgFloat > slice[j].ProgFloat
 }
 func (slice Stocks) Swap(i, j int) { slice[i], slice[j] = slice[j], slice[i] }
 
@@ -191,4 +204,15 @@ func RoundUp(input float64, places int) (newVal float64) {
 	round = math.Ceil(digit)
 	newVal = round / pow
 	return
+}
+
+//round rounds a number
+func round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
+
+//toFixed sets the number of decimals
+func toFixed(num float64, precision int) float64 {
+	output := math.Pow(10, float64(precision))
+	return float64(round(num*output)) / output
 }

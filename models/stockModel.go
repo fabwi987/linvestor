@@ -14,7 +14,8 @@ type StockDataSaveFormat struct {
 	BuyPrice           float64 `json:"BuyPrice" bson:"BuyPrice"`
 	NumberOfShares     float64 `json:"NumberOfShares" bson:"NumberOfShares"`
 	Created            string  `json:"created" bson:"Created"`
-	Progress           float64 `json:"Progress" bson:"Progress"`
+	Progress           string  `json:"Progress" bson:"Progress"`
+	ProgFloat          float64 `json:"ProgFloat" bson:"ProgFloat"`
 	Color              string  `json:"Color" bson:"Color"`
 	Active             string  `json:"Active" bson:"Active"`
 	SalesPrice         float64 `json:"SalesPrice" bson:"SalesPrice"`
