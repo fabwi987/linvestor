@@ -17,7 +17,7 @@
 			  <td><p class="lead text-center">{{$stock.Stock.Name}}<p><input type="hidden" name="symbol" value={{$stock.Stock.Symbol}}></td>
 			  <td><p class="lead text-center"> {{$stock.Stock.BuyPrice}}</p><input type="hidden" name="buyprice" value={{$stock.Stock.BuyPrice}}></td>
 			  <td><p class="lead text-center">{{$stock.Stock.LastTradePriceOnly}}</p><input type="hidden" name="lastprice" value={{$stock.Stock.LastTradePriceOnly}}></td>
-			  <!--<td{{if eq .Color "green"}} class="bg-success"{{else}} class="bg-danger"{{end}}><p class="lead text-center">{{$stock.Progress}}</p></td>-->
+			  
 				<td><input type="text" class="form-control" id="salesprice" name="salesprice" placeholder="Sales price"></td>
         <td><button class="btn btn-default" type="submit">Sell</button></td>
 				</form>
